@@ -6,7 +6,6 @@ import { AiTwotoneDelete } from 'react-icons/ai';
 import { BsFillArrowUpRightCircleFill } from 'react-icons/bs';
 
 import { client, urlFor } from '../client';
-import { fetchUser } from '../utils/fetchUser';
 
 const Pin = ({ pin }) => {
   const [postHovered, setPostHovered] = useState(false);
@@ -14,9 +13,9 @@ const Pin = ({ pin }) => {
 
   const navigate = useNavigate();
 
-  const { postedBy, image, _id, destination, save } = pin;
+  const { postedBy, image, _id, destination } = pin;
 
-  const user = fetchUser();
+  const user = localStorage.getItem('user') !== 'undefined' ? JSON.parse(localStorage.getItem('user')) : localStorage.clear();
 
   const deletePin = (id) => {
     client
@@ -26,12 +25,12 @@ const Pin = ({ pin }) => {
       });
   };
 
-  let alreadySaved = save?.filter((item) => item?.postedBy?._id === user?.googleId);
+  let alreadySaved = pin?.save?.filter((item) => item?.postedBy?._id === user?.googleId);
 
   alreadySaved = alreadySaved?.length > 0 ? alreadySaved : [];
 
   const savePin = (id) => {
-    if (!alreadySaved) {
+    if (alreadySaved?.length === 0) {
       setSavingPost(true);
 
       client
@@ -61,7 +60,8 @@ const Pin = ({ pin }) => {
         onClick={() => navigate(`/pin-detail/${_id}`)}
         className=" relative cursor-zoom-in w-auto hover:shadow-lg rounded-lg overflow-hidden transition-all duration-500 ease-in-out"
       >
-        <img className="rounded-lg w-full " src={(urlFor(image).width(250).url())} alt="user-post" />
+          {image && (
+        <img className="rounded-lg w-full " src={(urlFor(image).width(250).url())} alt="user-post" /> )}
         {postHovered && (
           <div
             className="absolute top-0 w-full h-full flex flex-col justify-between p-1 pr-2 pt-2 pb-2 z-50"
